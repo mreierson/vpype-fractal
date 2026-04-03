@@ -1,0 +1,106 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vpype-fractal"
+version = "0.1.0"
+description = "Fractal generator plugin for vpype"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{ name = "mreierson", email = "mreierson@users.noreply.github.com" }]
+keywords = ["vpype", "fractal", "plotter", "generative-art", "pen-plotter"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Plugins",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Artistic Software",
+    "Topic :: Multimedia :: Graphics",
+    "Typing :: Typed",
+]
+dependencies = [
+    "click>=8.0",
+    "numpy>=1.25",
+    "scipy>=1.11",
+    "vpype>=1.14,<2.0",
+]
+
+[project.optional-dependencies]
+penset = [
+    "vpype-penset>=0.1.0",
+]
+dev = [
+    "build>=1.2",
+    "mypy>=1.0",
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.6",
+]
+
+[project.urls]
+Homepage = "https://github.com/mreierson/vpype-fractal"
+Repository = "https://github.com/mreierson/vpype-fractal"
+Documentation = "https://github.com/mreierson/vpype-fractal/tree/main/docs"
+Issues = "https://github.com/mreierson/vpype-fractal/issues"
+
+[project.entry-points."vpype.plugins"]
+koch = "vpype_fractal.commands.koch:koch"
+sierpinski = "vpype_fractal.commands.sierpinski:sierpinski"
+dragon = "vpype_fractal.commands.dragon:dragon"
+hilbert = "vpype_fractal.commands.hilbert:hilbert"
+levy = "vpype_fractal.commands.levy:levy"
+gosper = "vpype_fractal.commands.gosper:gosper"
+peano = "vpype_fractal.commands.peano:peano"
+lsystem = "vpype_fractal.commands.lsystem_cmd:lsystem"
+tree = "vpype_fractal.commands.tree:tree"
+carpet = "vpype_fractal.commands.carpet:carpet"
+mandelbrot = "vpype_fractal.commands.mandelbrot:mandelbrot"
+julia = "vpype_fractal.commands.julia:julia"
+sierpinski-triangle = "vpype_fractal.commands.sierpinski_triangle:sierpinski_triangle"
+koch-island = "vpype_fractal.commands.koch_island:koch_island"
+minkowski = "vpype_fractal.commands.minkowski:minkowski"
+fern = "vpype_fractal.commands.fern:fern"
+ifs = "vpype_fractal.commands.ifs_cmd:ifs"
+attractor = "vpype_fractal.commands.attractor_cmd:attractor"
+clifford = "vpype_fractal.commands.clifford:clifford"
+dejong = "vpype_fractal.commands.dejong:dejong"
+lorenz = "vpype_fractal.commands.lorenz:lorenz"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vpype_fractal"]
+
+[tool.hatch.build]
+include = [
+    "src/vpype_fractal/**/*.py",
+    "src/vpype_fractal/py.typed",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_unused_ignores = true
+no_implicit_optional = true
+
+[[tool.mypy.overrides]]
+module = ["vpype", "vpype_cli", "numpy", "numpy.*", "scipy", "scipy.*"]
+ignore_missing_imports = true
