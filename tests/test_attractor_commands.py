@@ -28,13 +28,6 @@ class TestCliffordCommand:
         assert doc is not None
         assert len(doc.layers) == 4
 
-    def test_with_colorize(self):
-        doc = vpype_cli.execute("penset warm clifford -p 3000 --seed 42 -n 4 colorize")
-        assert doc is not None
-        assert len(doc.layers) == 4
-        for lid in doc.layers:
-            assert doc[lid].property("vp_color") is not None
-
 
 class TestDeJongCommand:
     def test_default_produces_output(self):

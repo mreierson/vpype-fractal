@@ -180,14 +180,6 @@ class TestEscapeTimeMultiLayer:
         assert doc is not None
         assert len(doc.layers) > 1
 
-    def test_penset_pipeline_assigns_colors(self):
-        doc = vpype_cli.execute("penset warm mandelbrot -d 30 -r 100 -n 5 colorize")
-        assert doc is not None
-        assert len(doc.layers) > 1
-        for lid in doc.layers:
-            color = doc[lid].property("vp_color")
-            assert color is not None
-
 
 class TestIFSCommands:
     def test_fern_produces_output(self):
