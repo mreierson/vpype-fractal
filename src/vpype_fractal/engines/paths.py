@@ -64,6 +64,10 @@ def nearest_neighbor_sort(points: np.ndarray) -> np.ndarray:
 
     Produces a traversal order where each point is followed by its closest
     unvisited neighbor, creating spatially coherent paths.
+
+    Uses an adaptive KD-tree k parameter that increases when the local
+    neighborhood is heavily visited, and maintains a remaining-point index
+    for efficient fallback instead of scanning the full array.
     """
     from scipy.spatial import cKDTree
 
@@ -78,6 +82,11 @@ def nearest_neighbor_sort(points: np.ndarray) -> np.ndarray:
     order = np.empty(n, dtype=int)
     current = 0
 
+    # Adaptive k: start moderate, grow when local area is depleted
+    k_base = min(64, n)
+    k_current = k_base
+    consecutive_misses = 0
+
     for i in range(n):
         order[i] = current
         visited[current] = True
@@ -85,8 +94,10 @@ def nearest_neighbor_sort(points: np.ndarray) -> np.ndarray:
         if i == n - 1:
             break
 
-        k = min(32, n)
-        _, indices = tree.query(coords[current], k=k)
+        _, indices = tree.query(coords[current], k=k_current)
+        # Handle scalar return when k_current == 1
+        if k_current == 1:
+            indices = np.array([indices])
 
         next_idx = -1
         for idx in indices:
@@ -95,9 +106,29 @@ def nearest_neighbor_sort(points: np.ndarray) -> np.ndarray:
                 break
 
         if next_idx == -1:
-            remaining = np.where(~visited)[0]
-            dists = np.sum((coords[remaining] - coords[current]) ** 2, axis=1)
-            next_idx = remaining[np.argmin(dists)]
+            # All k neighbors visited -- expand search adaptively
+            consecutive_misses += 1
+            k_current = min(k_base * (2 ** consecutive_misses), n)
+
+            # Re-query with expanded k
+            _, indices = tree.query(coords[current], k=k_current)
+            if k_current == 1:
+                indices = np.array([indices])
+            for idx in indices:
+                if not visited[idx]:
+                    next_idx = idx
+                    break
+
+            if next_idx == -1:
+                # Exhaustive fallback: find closest among all unvisited
+                remaining = np.where(~visited)[0]
+                dists = np.sum((coords[remaining] - coords[current]) ** 2, axis=1)
+                next_idx = remaining[np.argmin(dists)]
+        else:
+            # Reset adaptive expansion on success
+            if consecutive_misses > 0:
+                consecutive_misses = max(0, consecutive_misses - 1)
+                k_current = min(k_base * (2 ** consecutive_misses), n)
 
         current = next_idx
 

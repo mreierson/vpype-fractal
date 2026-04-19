@@ -2,6 +2,11 @@
 
 import numpy as np
 
+# Large escape radius for smooth iteration counting — the log-log
+# interpolation needs |z| >> R to produce smooth gradients.
+_ESCAPE_RADIUS = 256.0
+_LOG_ESCAPE_RADIUS = np.log(_ESCAPE_RADIUS)
+
 
 def mandelbrot_grid(
     x_min: float,
@@ -85,23 +90,29 @@ def _iterate(
     c: np.ndarray,
     max_iter: int,
 ) -> np.ndarray:
-    """Run z = z^2 + c iteration with smooth escape-time coloring."""
+    """Run z = z^2 + c iteration with smooth escape-time coloring.
+
+    Uses a large escape radius so the log-log interpolation produces
+    continuous (band-free) iteration counts.
+    """
     escape = np.full(z.shape, float(max_iter), dtype=np.float64)
 
     for i in range(max_iter):
         abs_z = np.abs(z)
-        mask = abs_z <= 2.0
+        mask = abs_z <= _ESCAPE_RADIUS
         if not np.any(mask):
             break
         z[mask] = z[mask] ** 2 + c[mask]
 
         # Detect newly escaped points using updated z
         abs_z_new = np.abs(z)
-        newly_escaped = (abs_z_new > 2.0) & (escape == max_iter)
+        newly_escaped = (abs_z_new > _ESCAPE_RADIUS) & (escape == max_iter)
         if np.any(newly_escaped):
-            # Smooth iteration count — clamp log inputs to avoid NaN
-            log_zn = np.log(np.maximum(abs_z_new[newly_escaped], 2.0)) / 2.0
-            nu = np.log(np.maximum(log_zn / np.log(2.0), 1e-10)) / np.log(2.0)
-            escape[newly_escaped] = i + 1 - np.clip(nu, 0.0, 1.0)
+            # Continuous (smooth) iteration count:
+            #   mu = n + 1 - log(log|z_n|) / log(2)
+            # normalised against the escape radius so mu stays in [0, max_iter].
+            log_zn = np.log(abs_z_new[newly_escaped])
+            nu = np.log(log_zn / _LOG_ESCAPE_RADIUS) / np.log(2.0)
+            escape[newly_escaped] = i + 1 - nu
 
     return escape

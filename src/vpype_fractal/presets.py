@@ -62,4 +62,78 @@ PRESETS: dict[str, LSystemDef] = {
         rules={"F": "F-F+F+FF-F-F+F"},
         angle=90.0,
     ),
+    # --- Botanical presets (Prusinkiewicz & Lindenmayer) ---
+    "tree-realistic": LSystemDef(
+        axiom="X",
+        rules={"X": "F[+X]F[-X]+X", "F": "FF"},
+        angle=20.0,
+        heading=90.0,
+    ),
+    "bush": LSystemDef(
+        axiom="F",
+        rules={"F": "FF+[+F-F-F]-[-F+F+F]"},
+        angle=22.5,
+        heading=90.0,
+    ),
+    "flower": LSystemDef(
+        axiom="F[+F+F][-F-F][++F][--F]F",
+        rules={"F": "FF[++F][+F][F][-F][--F]"},
+        angle=15.0,
+        heading=90.0,
+    ),
+    "seaweed": LSystemDef(
+        axiom="F",
+        rules={"F": "FF-[-F+F+F]+[+F-F-F]"},
+        angle=22.5,
+        heading=90.0,
+    ),
+    "vine": LSystemDef(
+        axiom="X",
+        rules={"X": "F+[[X]-X]-F[-FX]+X", "F": "FF"},
+        angle=25.0,
+        heading=90.0,
+    ),
+    # --- Additional botanical presets ---
+    "herb": LSystemDef(
+        axiom="X",
+        rules={"X": "F[-X][+X]FX", "F": "FF"},
+        angle=25.7,
+        heading=90.0,
+    ),
+    "kelp": LSystemDef(
+        axiom="F",
+        rules={"F": "F[+F]F[-F]F"},
+        angle=25.7,
+        heading=90.0,
+    ),
+    "branching-y": LSystemDef(
+        axiom="X",
+        rules={"X": "F[+X][-X]FX", "F": "FF"},
+        angle=30.0,
+        heading=90.0,
+    ),
+    "moss": LSystemDef(
+        axiom="F",
+        rules={"F": "F[-F]F[+F][F]"},
+        angle=20.0,
+        heading=90.0,
+    ),
+    "sapling": LSystemDef(
+        axiom="X",
+        rules={"X": "F-[[X]+X]+F[+FX]-X", "F": "FF"},
+        angle=22.5,
+        heading=90.0,
+    ),
+    "fern-frond": LSystemDef(
+        axiom="X",
+        rules={"X": "F[+X]F[-X]+X", "F": "FF"},
+        angle=20.0,
+        heading=90.0,
+    ),
+    "willow": LSystemDef(
+        axiom="F",
+        rules={"F": "FF[++F][-FF][+F][-F]"},
+        angle=18.0,
+        heading=90.0,
+    ),
 }
