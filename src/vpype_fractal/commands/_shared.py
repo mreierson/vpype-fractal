@@ -23,6 +23,7 @@ _RASTER_RESOLUTION = 800
 # Plugin-level --raster and --layer options
 # ---------------------------------------------------------------------------
 
+
 def fractal_options(fn: click.BaseCommand) -> click.BaseCommand:
     """Add standard ``--layer`` and ``--raster`` options to a fractal command."""
     fn = click.option(
@@ -66,6 +67,7 @@ def finalize_fractal(
 # Raster storage helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_image_data(pil_image: Image.Image) -> object:
     """Create an ImageData-compatible object from a PIL image.
 
@@ -74,6 +76,7 @@ def _make_image_data(pil_image: Image.Image) -> object:
     """
     try:
         from vpype_raster.core.image import ImageData
+
         return ImageData.from_pil(pil_image)
     except ImportError:
         w, h = pil_image.size
@@ -354,7 +357,7 @@ def _escape_to_palette_image(
         # gradient.  This adds the topographic ring effect that gives
         # reference-quality renders their characteristic depth.
         cycle = 0.5 * (1.0 + np.cos(raw * 0.4))  # gentle sinusoidal bands
-        colors *= (0.85 + 0.15 * cycle[..., np.newaxis])  # ±15% modulation
+        colors *= 0.85 + 0.15 * cycle[..., np.newaxis]  # ±15% modulation
 
         # Cap at 90% to leave headroom for glow effect
         colors *= 0.9
@@ -404,10 +407,7 @@ def _store_raster_from_lines(
     sy = (px_h - 1) / height if height > 0 else 1.0
 
     for line in lc:
-        pts = [
-            (int((p.real - x_min) * sx), int((p.imag - y_min) * sy))
-            for p in line
-        ]
+        pts = [(int((p.real - x_min) * sx), int((p.imag - y_min) * sy)) for p in line]
         if len(pts) >= 2:
             draw.line(pts, fill=0, width=1)
 
@@ -441,6 +441,7 @@ class _ImageCompat:
 # L-system helpers
 # ---------------------------------------------------------------------------
 
+
 def generate_lsystem_fractal(
     preset_name: str,
     depth: int,
@@ -461,6 +462,7 @@ def generate_lsystem_fractal(
 # ---------------------------------------------------------------------------
 # Scaling helpers
 # ---------------------------------------------------------------------------
+
 
 def clip_lines_to_mask(
     lc: vp.LineCollection,
@@ -636,6 +638,7 @@ def scale_all_to_size(
 # Escape-time fractal helper
 # ---------------------------------------------------------------------------
 
+
 def _chaikin_smooth(line: np.ndarray, passes: int = 1, closed: bool = False) -> np.ndarray:
     """Chaikin corner-cutting: each segment becomes two subdivision points.
 
@@ -726,10 +729,14 @@ def generate_escape_time_fractal(
     n_linear = max(levels - levels // 3, levels // 2 + 1)
     n_geom = max(levels - n_linear, 2)
     linear_part = np.linspace(
-        max(1.0, max_iter * 0.01), max_iter * 0.6, n_linear,
+        max(1.0, max_iter * 0.01),
+        max_iter * 0.6,
+        n_linear,
     ).tolist()
     geom_part = np.geomspace(
-        max_iter * 0.6, max_iter * 0.95, n_geom + 1,
+        max_iter * 0.6,
+        max_iter * 0.95,
+        n_geom + 1,
     ).tolist()[1:]  # extend inward to capture near-body filigree
     level_values = sorted(linear_part + geom_part)
     if add_body_fill:
@@ -799,6 +806,7 @@ def generate_escape_time_fractal(
 # Density contour helper (attractors)
 # ---------------------------------------------------------------------------
 
+
 def generate_density_contours(
     doc: vp.Document,
     points: np.ndarray,
@@ -853,6 +861,7 @@ def generate_density_contours(
 # ---------------------------------------------------------------------------
 # Attractor trajectory helper
 # ---------------------------------------------------------------------------
+
 
 def generate_attractor_layers(
     doc: vp.Document,

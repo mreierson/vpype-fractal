@@ -55,8 +55,10 @@ def gosper(
         # within the bbox. Feed the inflated size into depth calculation
         # so the requested pitch is preserved after the overfill.
         overfill = 1.55
-        effective_depth = depth if depth is not None else auto_depth(
-            region.width * overfill, region.height * overfill, pitch, "gosper"
+        effective_depth = (
+            depth
+            if depth is not None
+            else auto_depth(region.width * overfill, region.height * overfill, pitch, "gosper")
         )
         nominal_size = max(region.width, region.height)
         lc = generate_lsystem_fractal("gosper", effective_depth, nominal_size)
@@ -66,9 +68,7 @@ def gosper(
         # (vpype-raster protocol), so pass the mask's full extent as bounds.
         if region.mask is not None:
             mask_h, mask_w = region.mask.shape
-            lc = clip_lines_to_mask(
-                lc, region.mask, (0.0, 0.0, float(mask_w), float(mask_h))
-            )
+            lc = clip_lines_to_mask(lc, region.mask, (0.0, 0.0, float(mask_w), float(mask_h)))
 
         return finalize_fractal(doc, lc, target_layer=target_layer, raster=raster)
 

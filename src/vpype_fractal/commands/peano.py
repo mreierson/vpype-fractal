@@ -53,8 +53,10 @@ def peano(
         # Peano fills a square densely; a small overfill handles any
         # tilted rectangle within the target bbox.
         overfill = 1.15
-        effective_depth = depth if depth is not None else auto_depth(
-            region.width * overfill, region.height * overfill, pitch, "peano"
+        effective_depth = (
+            depth
+            if depth is not None
+            else auto_depth(region.width * overfill, region.height * overfill, pitch, "peano")
         )
         nominal_size = max(region.width, region.height)
         lc = generate_lsystem_fractal("peano", effective_depth, nominal_size)
@@ -64,9 +66,7 @@ def peano(
         # (vpype-raster protocol), so pass the mask's full extent as bounds.
         if region.mask is not None:
             mask_h, mask_w = region.mask.shape
-            lc = clip_lines_to_mask(
-                lc, region.mask, (0.0, 0.0, float(mask_w), float(mask_h))
-            )
+            lc = clip_lines_to_mask(lc, region.mask, (0.0, 0.0, float(mask_w), float(mask_h)))
 
         return finalize_fractal(doc, lc, target_layer=target_layer, raster=raster)
 

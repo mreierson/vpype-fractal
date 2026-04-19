@@ -108,7 +108,7 @@ def nearest_neighbor_sort(points: np.ndarray) -> np.ndarray:
         if next_idx == -1:
             # All k neighbors visited -- expand search adaptively
             consecutive_misses += 1
-            k_current = min(k_base * (2 ** consecutive_misses), n)
+            k_current = min(k_base * (2**consecutive_misses), n)
 
             # Re-query with expanded k
             _, indices = tree.query(coords[current], k=k_current)
@@ -128,7 +128,7 @@ def nearest_neighbor_sort(points: np.ndarray) -> np.ndarray:
             # Reset adaptive expansion on success
             if consecutive_misses > 0:
                 consecutive_misses = max(0, consecutive_misses - 1)
-                k_current = min(k_base * (2 ** consecutive_misses), n)
+                k_current = min(k_base * (2**consecutive_misses), n)
 
         current = next_idx
 

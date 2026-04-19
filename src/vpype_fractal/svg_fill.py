@@ -121,7 +121,7 @@ def add_radial_band_gradients(svg_content: str) -> str:
             f'gradientUnits="userSpaceOnUse">'
             f'<stop offset="0%" stop-color="{this_color}"/>'
             f'<stop offset="100%" stop-color="{next_color}"/>'
-            f'</radialGradient>'
+            f"</radialGradient>"
         )
 
     # Replace each group's fill with url(#band-grad-i) in document order.
@@ -179,13 +179,14 @@ def _inject_glow(svg_content: str) -> str:
     in pure SVG. Uses feGaussianBlur + feMerge. No rasterization — stays
     vector and resolution-independent on re-export.
     """
-    if "id=\"fractal-glow\"" in svg_content:
+    if 'id="fractal-glow"' in svg_content:
         return svg_content
     for marker in ["<defs/>", "</defs>"]:
         if marker in svg_content:
             svg_content = svg_content.replace(
                 marker,
-                "<defs>" + _GLOW_FILTER + "</defs>" if marker == "<defs/>"
+                "<defs>" + _GLOW_FILTER + "</defs>"
+                if marker == "<defs/>"
                 else _GLOW_FILTER + marker,
                 1,
             )
@@ -213,10 +214,7 @@ def _add_background_rect(svg_content: str, color: str = "#000000") -> str:
         return svg_content
 
     vb_x, vb_y, vb_w, vb_h = parts
-    rect = (
-        f'  <rect x="{vb_x}" y="{vb_y}" width="{vb_w}" height="{vb_h}" '
-        f'fill="{color}" />\n'
-    )
+    rect = f'  <rect x="{vb_x}" y="{vb_y}" width="{vb_w}" height="{vb_h}" fill="{color}" />\n'
 
     for marker in ["<defs/>", "</defs>"]:
         if marker in svg_content:

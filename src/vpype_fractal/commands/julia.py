@@ -128,25 +128,39 @@ def julia(
 
     if emit_region:
         from vpype_fractal._region import emit_region_mask
+
         interior_mask = escape >= max_iter
         emit_region_mask(
             doc,
             interior_mask,
             generator="julia",
             source=f"c={cx}+{cy}i",
-            params={"cx": cx, "cy": cy, "max_iter": max_iter,
-                    "bounds": (x_min, x_max, y_min, y_max)},
+            params={
+                "cx": cx,
+                "cy": cy,
+                "max_iter": max_iter,
+                "bounds": (x_min, x_max, y_min, y_max),
+            },
             name=f"julia_interior_{cx}_{cy}",
         )
         if not also_lines:
             if raster or save_image:
                 from vpype_fractal.commands._shared import _store_raster
+
                 _store_raster(doc, escape, max_iter, palette_name)
             return doc
 
     return generate_escape_time_fractal(
-        doc, x, y, escape, max_iter, levels, size,
-        raster=raster, palette_name=palette_name, save_image=save_image,
+        doc,
+        x,
+        y,
+        escape,
+        max_iter,
+        levels,
+        size,
+        raster=raster,
+        palette_name=palette_name,
+        save_image=save_image,
     )
 
 
