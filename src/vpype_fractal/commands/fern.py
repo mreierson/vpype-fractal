@@ -6,7 +6,7 @@ import vpype_cli
 
 from vpype_fractal.engines.ifs import IFS_PRESETS, ifs_to_lines
 
-from ._shared import scale_to_size
+from ._shared import finalize_fractal, fractal_options, scale_to_size
 
 
 @click.command()
@@ -36,17 +36,22 @@ from ._shared import scale_to_size
     default=None,
     help="Random seed for reproducibility.",
 )
-@vpype_cli.generator
+@fractal_options
+@vpype_cli.global_processor
 def fern(
+    doc: vp.Document,
     size: float,
     points: int,
     segment_length: int,
     seed: int | None,
-) -> vp.LineCollection:
+    target_layer: int | None,
+    raster: bool,
+) -> vp.Document:
     """Generate a Barnsley Fern (shortcut for `ifs --preset fern`)."""
     transforms = IFS_PRESETS["fern"].transforms
     lc = ifs_to_lines(transforms, points, seed=seed, segment_length=segment_length)
-    return scale_to_size(lc, size)
+    lc = scale_to_size(lc, size)
+    return finalize_fractal(doc, lc, target_layer=target_layer, raster=raster)
 
 
 fern.help_group = "Fractals"  # type: ignore[attr-defined]

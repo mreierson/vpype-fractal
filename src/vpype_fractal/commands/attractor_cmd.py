@@ -32,6 +32,12 @@ from ._shared import generate_attractor_layers
     help="Split trajectory into N layers for color gradients.",
 )
 @click.option("--seed", type=int, default=None, help="Random seed for reproducibility.")
+@click.option(
+    "--raster",
+    is_flag=True,
+    help="Store fractal as raster image metadata for downstream "
+    "raster commands (stipple, hatch, halftone, etc.).",
+)
 @vpype_cli.global_processor
 def attractor(
     doc: vp.Document,
@@ -40,6 +46,7 @@ def attractor(
     points: int | None,
     layers: int,
     seed: int | None,
+    raster: bool,
 ) -> vp.Document:
     """Generate a strange attractor from a named preset.
 
@@ -58,7 +65,6 @@ def attractor(
     kind = preset_def.kind
     params = preset_def.params
 
-    # Default point counts per type
     if points is None:
         points = 50000 if kind == "lorenz" else 3000
 
@@ -66,7 +72,7 @@ def attractor(
     raw = runner(params, points, seed)
 
     smooth = 10 if kind in ("clifford", "dejong") else 0
-    return generate_attractor_layers(doc, raw, layers, size, smooth=smooth)
+    return generate_attractor_layers(doc, raw, layers, size, smooth=smooth, raster=raster)
 
 
 attractor.help_group = "Fractals"  # type: ignore[attr-defined]

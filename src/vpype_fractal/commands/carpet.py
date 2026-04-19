@@ -6,7 +6,7 @@ import vpype_cli
 
 from vpype_fractal.engines.geometric import build_carpet
 
-from ._shared import scale_to_size
+from ._shared import finalize_fractal, fractal_options, scale_to_size
 
 
 @click.command()
@@ -24,8 +24,11 @@ from ._shared import scale_to_size
     default="100mm",
     help="Overall size.",
 )
-@vpype_cli.generator
-def carpet(depth: int, size: float) -> vp.LineCollection:
+@fractal_options
+@vpype_cli.global_processor
+def carpet(
+    doc: vp.Document, depth: int, size: float, target_layer: int | None, raster: bool
+) -> vp.Document:
     """Generate a Sierpinski carpet fractal."""
     lines = build_carpet(depth)
 
@@ -33,7 +36,8 @@ def carpet(depth: int, size: float) -> vp.LineCollection:
     for line in lines:
         lc.append(line)
 
-    return scale_to_size(lc, size)
+    lc = scale_to_size(lc, size)
+    return finalize_fractal(doc, lc, target_layer=target_layer, raster=raster)
 
 
 carpet.help_group = "Fractals"  # type: ignore[attr-defined]

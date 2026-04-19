@@ -38,6 +38,12 @@ _DEJONG_PRESETS = {k: v for k, v in ATTRACTOR_PRESETS.items() if v.kind == "dejo
     help="Split trajectory into N layers for color gradients.",
 )
 @click.option("--seed", type=int, default=None, help="Random seed for reproducibility.")
+@click.option(
+    "--raster",
+    is_flag=True,
+    help="Store fractal as raster image metadata for downstream "
+    "raster commands (stipple, hatch, halftone, etc.).",
+)
 @vpype_cli.global_processor
 def dejong(
     doc: vp.Document,
@@ -50,6 +56,7 @@ def dejong(
     points: int,
     layers: int,
     seed: int | None,
+    raster: bool,
 ) -> vp.Document:
     """Generate a De Jong strange attractor.
 
@@ -78,7 +85,7 @@ def dejong(
         d = d if d is not None else -2.1
 
     raw = run_dejong(a, b, c, d, points, seed=seed)
-    return generate_attractor_layers(doc, raw, layers, size, smooth=10)
+    return generate_attractor_layers(doc, raw, layers, size, smooth=10, raster=raster)
 
 
 dejong.help_group = "Fractals"  # type: ignore[attr-defined]

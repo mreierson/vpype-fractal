@@ -4,7 +4,7 @@ import click
 import vpype as vp
 import vpype_cli
 
-from ._shared import generate_lsystem_fractal
+from ._shared import finalize_fractal, fractal_options, generate_lsystem_fractal
 
 
 @click.command()
@@ -22,10 +22,14 @@ from ._shared import generate_lsystem_fractal
     default="100mm",
     help="Overall size.",
 )
-@vpype_cli.generator
-def dragon(depth: int, size: float) -> vp.LineCollection:
+@fractal_options
+@vpype_cli.global_processor
+def dragon(
+    doc: vp.Document, depth: int, size: float, target_layer: int | None, raster: bool
+) -> vp.Document:
     """Generate a dragon curve fractal."""
-    return generate_lsystem_fractal("dragon", depth, size)
+    lc = generate_lsystem_fractal("dragon", depth, size)
+    return finalize_fractal(doc, lc, target_layer=target_layer, raster=raster)
 
 
 dragon.help_group = "Fractals"  # type: ignore[attr-defined]

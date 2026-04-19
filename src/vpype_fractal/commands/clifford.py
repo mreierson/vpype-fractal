@@ -38,6 +38,12 @@ _CLIFFORD_PRESETS = {k: v for k, v in ATTRACTOR_PRESETS.items() if v.kind == "cl
     help="Split trajectory into N layers for color gradients.",
 )
 @click.option("--seed", type=int, default=None, help="Random seed for reproducibility.")
+@click.option(
+    "--raster",
+    is_flag=True,
+    help="Store fractal as raster image metadata for downstream "
+    "raster commands (stipple, hatch, halftone, etc.).",
+)
 @vpype_cli.global_processor
 def clifford(
     doc: vp.Document,
@@ -50,6 +56,7 @@ def clifford(
     points: int,
     layers: int,
     seed: int | None,
+    raster: bool,
 ) -> vp.Document:
     """Generate a Clifford strange attractor.
 
@@ -79,7 +86,7 @@ def clifford(
         d = d if d is not None else 0.7
 
     raw = run_clifford(a, b, c, d, points, seed=seed)
-    return generate_attractor_layers(doc, raw, layers, size, smooth=10)
+    return generate_attractor_layers(doc, raw, layers, size, smooth=10, raster=raster)
 
 
 clifford.help_group = "Fractals"  # type: ignore[attr-defined]

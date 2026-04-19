@@ -38,6 +38,12 @@ _LORENZ_PRESETS = {k: v for k, v in ATTRACTOR_PRESETS.items() if v.kind == "lore
     help="Split trajectory into N layers for color gradients.",
 )
 @click.option("--seed", type=int, default=None, help="Random seed for reproducibility.")
+@click.option(
+    "--raster",
+    is_flag=True,
+    help="Store fractal as raster image metadata for downstream "
+    "raster commands (stipple, hatch, halftone, etc.).",
+)
 @vpype_cli.global_processor
 def lorenz(
     doc: vp.Document,
@@ -50,6 +56,7 @@ def lorenz(
     points: int,
     layers: int,
     seed: int | None,
+    raster: bool,
 ) -> vp.Document:
     """Generate a Lorenz strange attractor (XZ projection).
 
@@ -74,7 +81,7 @@ def lorenz(
         dt = dt if dt is not None else 0.005
 
     raw = run_lorenz(sigma, rho, beta, dt, points, seed=seed)
-    return generate_attractor_layers(doc, raw, layers, size)
+    return generate_attractor_layers(doc, raw, layers, size, raster=raster)
 
 
 lorenz.help_group = "Fractals"  # type: ignore[attr-defined]

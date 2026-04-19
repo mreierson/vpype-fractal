@@ -6,7 +6,7 @@ import vpype_cli
 
 from vpype_fractal.engines.ifs import IFS_PRESETS, AffineTransform, ifs_to_lines
 
-from ._shared import scale_to_size
+from ._shared import finalize_fractal, fractal_options, scale_to_size
 
 
 def _parse_transform(s: str) -> AffineTransform:
@@ -59,15 +59,19 @@ def _parse_transform(s: str) -> AffineTransform:
     default=None,
     help="Random seed for reproducibility.",
 )
-@vpype_cli.generator
+@fractal_options
+@vpype_cli.global_processor
 def ifs(
+    doc: vp.Document,
     preset: str | None,
     transforms_raw: tuple[str, ...],
     size: float,
     points: int,
     segment_length: int,
     seed: int | None,
-) -> vp.LineCollection:
+    target_layer: int | None,
+    raster: bool,
+) -> vp.Document:
     """Generate an IFS fractal using the chaos game algorithm.
 
     Use --preset for a named fractal, or define custom transforms with
@@ -102,7 +106,8 @@ def ifs(
         transforms = [_parse_transform(t) for t in transforms_raw]
 
     lc = ifs_to_lines(transforms, points, seed=seed, segment_length=segment_length)
-    return scale_to_size(lc, size)
+    lc = scale_to_size(lc, size)
+    return finalize_fractal(doc, lc, target_layer=target_layer, raster=raster)
 
 
 ifs.help_group = "Fractals"  # type: ignore[attr-defined]

@@ -55,6 +55,12 @@ from ._shared import generate_escape_time_fractal
 @click.option("--x-max", type=float, default=1.5, help="Right bound of z-plane.")
 @click.option("--y-min", type=float, default=-1.5, help="Bottom bound of z-plane.")
 @click.option("--y-max", type=float, default=1.5, help="Top bound of z-plane.")
+@click.option(
+    "--raster",
+    is_flag=True,
+    help="Store escape-time grid as raster image metadata for downstream "
+    "raster commands (stipple, hatch, halftone, etc.).",
+)
 @vpype_cli.global_processor
 def julia(
     doc: vp.Document,
@@ -68,6 +74,7 @@ def julia(
     x_max: float,
     y_min: float,
     y_max: float,
+    raster: bool,
 ) -> vp.Document:
     """Generate contour lines of a Julia set.
 
@@ -87,7 +94,7 @@ def julia(
     if y_min >= y_max:
         raise click.UsageError(f"--y-min ({y_min}) must be less than --y-max ({y_max})")
     x, y, escape = julia_grid(cx, cy, x_min, x_max, y_min, y_max, resolution, max_iter)
-    return generate_escape_time_fractal(doc, x, y, escape, max_iter, levels, size)
+    return generate_escape_time_fractal(doc, x, y, escape, max_iter, levels, size, raster=raster)
 
 
 julia.help_group = "Fractals"  # type: ignore[attr-defined]

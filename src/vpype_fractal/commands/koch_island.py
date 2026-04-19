@@ -4,7 +4,7 @@ import click
 import vpype as vp
 import vpype_cli
 
-from ._shared import generate_lsystem_fractal
+from ._shared import finalize_fractal, fractal_options, generate_lsystem_fractal
 
 
 @click.command("koch-island")
@@ -22,14 +22,18 @@ from ._shared import generate_lsystem_fractal
     default="100mm",
     help="Overall size.",
 )
-@vpype_cli.generator
-def koch_island(depth: int, size: float) -> vp.LineCollection:
+@fractal_options
+@vpype_cli.global_processor
+def koch_island(
+    doc: vp.Document, depth: int, size: float, target_layer: int | None, raster: bool
+) -> vp.Document:
     """Generate a Koch Island (quadratic Koch island).
 
     A square variant of the Koch snowflake that produces an island-like shape
     with a complex, jagged coastline.
     """
-    return generate_lsystem_fractal("koch_island", depth, size)
+    lc = generate_lsystem_fractal("koch_island", depth, size)
+    return finalize_fractal(doc, lc, target_layer=target_layer, raster=raster)
 
 
 koch_island.help_group = "Fractals"  # type: ignore[attr-defined]

@@ -6,7 +6,7 @@ import vpype_cli
 
 from vpype_fractal.engines import expand, turtle_to_lines
 
-from ._shared import scale_to_size
+from ._shared import finalize_fractal, fractal_options, scale_to_size
 
 
 def parse_rule(rule_str: str) -> tuple[str, str]:
@@ -60,15 +60,19 @@ def parse_rule(rule_str: str) -> tuple[str, str]:
     default=0.0,
     help="Initial turtle heading in degrees (0 = right, 90 = up).",
 )
-@vpype_cli.generator
+@fractal_options
+@vpype_cli.global_processor
 def lsystem(
+    doc: vp.Document,
     axiom: str,
     rules: tuple[str, ...],
     angle: float,
     depth: int,
     size: float,
     heading: float,
-) -> vp.LineCollection:
+    target_layer: int | None,
+    raster: bool,
+) -> vp.Document:
     """Generate a custom L-system fractal.
 
     Example: vpype lsystem --axiom "F--F--F" --rule "F=F+F--F+F" --angle 60 -d 4 show
@@ -76,7 +80,8 @@ def lsystem(
     rule_dict = dict(parse_rule(r) for r in rules)
     instructions = expand(axiom, rule_dict, depth)
     lc = turtle_to_lines(instructions, angle=angle, step=1.0, heading=heading)
-    return scale_to_size(lc, size)
+    lc = scale_to_size(lc, size)
+    return finalize_fractal(doc, lc, target_layer=target_layer, raster=raster)
 
 
 lsystem.help_group = "Fractals"  # type: ignore[attr-defined]
