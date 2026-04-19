@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any
+
 import click
 import numpy as np
 import vpype as vp
@@ -24,7 +27,7 @@ _RASTER_RESOLUTION = 800
 # ---------------------------------------------------------------------------
 
 
-def fractal_options(fn: click.BaseCommand) -> click.BaseCommand:
+def fractal_options(fn: Callable[..., Any]) -> Callable[..., Any]:
     """Add standard ``--layer`` and ``--raster`` options to a fractal command."""
     fn = click.option(
         "--raster",

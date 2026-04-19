@@ -34,8 +34,8 @@ try:
 
     _HAS_REGION_TYPES = True
 except ImportError:
-    _RasterRegion = None  # type: ignore[assignment]
-    _RasterRegionSet = None  # type: ignore[assignment]
+    _RasterRegion = None
+    _RasterRegionSet = None
     _HAS_REGION_TYPES = False
 
 

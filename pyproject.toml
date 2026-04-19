@@ -108,5 +108,19 @@ warn_unused_ignores = true
 no_implicit_optional = true
 
 [[tool.mypy.overrides]]
-module = ["vpype", "vpype_cli", "numpy", "numpy.*", "scipy", "scipy.*"]
+module = [
+    "vpype",
+    "vpype_cli",
+    "numpy",
+    "numpy.*",
+    "scipy",
+    "scipy.*",
+    "PIL",
+    "PIL.*",
+]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["vpype_raster.*", "vpype_penset.*"]
+ignore_missing_imports = true
+follow_imports = "skip"
